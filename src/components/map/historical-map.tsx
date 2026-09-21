@@ -4,6 +4,8 @@
  *
  * @changelog
  * 2026-09-21  Početna verzija.
+ * 2026-09-21  Worker se učitava iz /maplibre/ (setWorkerUrl) – pod Turbopack-om je bio 404 i mapa je ostajala prazna.
+ * 2026-09-21  Kontejner mape dobija inline position:absolute (maplibre-gl.css je nadjačavao Tailwind klasu, visina 0).
  */
 "use client";
 
@@ -14,6 +16,7 @@ import {
   Map as MapLibreMap,
   type MapGeoJSONFeature,
   NavigationControl,
+  setWorkerUrl,
 } from "maplibre-gl";
 import { useEffect, useRef } from "react";
 
@@ -23,6 +26,10 @@ import { mapUrl, type MapYear, type RegionProperties } from "@/lib/map-years";
 import type { RegionFill } from "@/lib/map-fill";
 
 import { BORDER, colorForRatio, LAND_LINKED_NOT_LOADED, LAND_UNLINKED, OCEAN } from "./fill-colors";
+
+// REASON: MapLibre 6 traži worker pored svog modula (import.meta.url), što pod Turbopack-om ne
+// postoji; worker se kopira u public/maplibre (scripts/copy-maplibre-worker.mjs) i servira odatle.
+setWorkerUrl("/maplibre/maplibre-gl-worker.mjs");
 
 const SOURCE = "regions";
 const L_FILL = "regions-fill";
@@ -198,5 +205,14 @@ export function HistoricalMap({ year, fills, selected, onSelect, onHover }: Prop
     map.setFilter(L_SELECTED, ["==", ["get", "NAME"], selected ?? ""]);
   }, [selected]);
 
-  return <div ref={containerRef} className="absolute inset-0" aria-label="Istorijska mapa svijeta" />;
+  // REASON: maplibre-gl.css postavlja `.maplibregl-map { position: relative }` i nadjačava Tailwind
+  // `absolute` (ista specifičnost, kasnije učitan) – kontejner tada ima visinu 0 i mapa je prazna.
+  // Inline stil je jači od oba.
+  return (
+    <div
+      ref={containerRef}
+      style={{ position: "absolute", inset: 0 }}
+      aria-label="Istorijska mapa svijeta"
+    />
+  );
 }

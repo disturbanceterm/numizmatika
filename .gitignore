@@ -50,3 +50,6 @@ next-env.d.ts
 
 # alati agenta (web fetch keš)
 /agent-tools/
+
+# MapLibre worker (kopira ga scripts/copy-maplibre-worker.mjs iz node_modules)
+/public/maplibre/

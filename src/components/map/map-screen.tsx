@@ -89,7 +89,7 @@ export function MapScreen() {
         </div>
       )}
 
-      <div className="absolute bottom-10 left-3 z-10 hidden sm:block">
+      <div className="absolute bottom-14 left-3 z-10 hidden sm:block">
         <Legend />
       </div>
     </div>

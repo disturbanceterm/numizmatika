@@ -12,6 +12,9 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // Numizmatika: generisani Prisma klijent i kopirani MapLibre worker (vendor kod).
+    "src/generated/**",
+    "public/**",
   ]),
 ]);
 
