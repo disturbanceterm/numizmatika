@@ -1,16 +1,19 @@
 /**
- * Prisma klijent (singleton) sa better-sqlite3 adapterom.
+ * Prisma klijent (singleton) sa libsql adapterom (lokalni SQLite fajl).
  *
  * @changelog
- * 2026-09-21  Početna verzija.
+ * 2026-09-21  Početna verzija (better-sqlite3).
+ * 2026-09-21  Prelazak na @prisma/adapter-libsql: better-sqlite3 nema gotove binarne fajlove za
+ *             novije Node verzije na Windowsu pa `npm install` traži Python + VS Build Tools;
+ *             libsql isporučuje N-API binarne fajlove za win32/darwin/linux nezavisno od Node verzije.
  */
-import { PrismaBetterSqlite3 } from "@prisma/adapter-better-sqlite3";
+import { PrismaLibSql } from "@prisma/adapter-libsql";
 import { PrismaClient } from "@/generated/prisma/client";
 
 const DEFAULT_DATABASE_URL = "file:./data/numizmatika.db";
 
 function createClient() {
-  const adapter = new PrismaBetterSqlite3({
+  const adapter = new PrismaLibSql({
     url: process.env.DATABASE_URL ?? DEFAULT_DATABASE_URL,
   });
   return new PrismaClient({ adapter });

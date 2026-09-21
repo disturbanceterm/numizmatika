@@ -9,6 +9,7 @@ izblijedjela silueta). Sve što imaš upisuješ sa godinom, stanjem, slikom i na
 @changelog
 2026-09-21  Početna verzija.
 2026-09-21  Dodato brzo pokretanje na Windows-u (PowerShell) i napomena o MapLibre workeru.
+2026-09-21  SQLite preko libsql adaptera (bez kompajliranja na Windowsu).
 -->
 
 Kod: <https://github.com/disturbanceterm/numizmatika>
@@ -96,7 +97,7 @@ Pravi ključ nikad ne komituj – `.env` je u `.gitignore`.
 ## Tehnologije
 
 Next.js (App Router) · TypeScript · Tailwind CSS · shadcn/ui · MapLibre GL JS · Prisma 7 + SQLite
-(`better-sqlite3`).
+(`@prisma/adapter-libsql` – gotovi binarni fajlovi za Windows/macOS/Linux, ne treba Python ni C++ alati).
 
 ## Zasluge i licence
 
