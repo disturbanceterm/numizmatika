@@ -48,8 +48,5 @@ next-env.d.ts
 /data/uploads/
 !.env.example
 
-# alati agenta (web fetch keš)
-/agent-tools/
-
 # MapLibre worker (kopira ga scripts/copy-maplibre-worker.mjs iz node_modules)
 /public/maplibre/
