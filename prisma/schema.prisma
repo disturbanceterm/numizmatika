@@ -1,0 +1,116 @@
+// Numizmatika – Prisma šema (SQLite, jedan korisnik, bez auth-a)
+//
+// @changelog
+// 2026-09-21  Početna verzija: Issuer, RegionLink, CatalogType, CollectionItem, ApiUsage, Setting.
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+/// Država / izdavač iz Numista kataloga (GET /issuers). Keširano jednom.
+model Issuer {
+  code       String   @id
+  name       String
+  flag       String?
+  wikidataId String?
+  parentCode String?
+  parentName String?
+  level      Int?
+  /// Kada je katalog (/types) za ovog izdavača zadnji put dovučen; null = nije.
+  catalogSyncedAt DateTime?
+  /// Ukupan broj tipova koji Numista javlja za izdavača (za progres učitavanja).
+  catalogTotal    Int?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  regionLinks RegionLink[]
+  types       CatalogType[]
+}
+
+/// Veza između imena regiona na istorijskoj mapi (NAME iz GeoJSON-a) i Numista izdavača.
+/// Isti region može imati više izdavača (npr. Yugoslavia -> Kraljevina, SFRJ, SRJ), opciono po godinama.
+model RegionLink {
+  id         Int      @id @default(autoincrement())
+  regionName String
+  issuerCode String
+  /// Prva godina mape za koju veza važi (uključivo); null = bez donje granice.
+  yearFrom   Int?
+  /// Zadnja godina mape za koju veza važi (uključivo); null = bez gornje granice.
+  yearTo     Int?
+  /// "seed" (iz data/region-links.json) ili "user" (povezano iz /podesavanja).
+  source     String   @default("user")
+  createdAt  DateTime @default(now())
+
+  issuer Issuer @relation(fields: [issuerCode], references: [code], onDelete: Cascade)
+
+  @@unique([regionName, issuerCode, yearFrom, yearTo])
+  @@index([regionName])
+}
+
+/// Jedna novčanica / kovanica iz kataloga (Numista tip, N#).
+model CatalogType {
+  id              Int      @id
+  issuerCode      String
+  /// "banknote" | "coin" | "exonumia" – izvedeno iz object_type.name.
+  category        String
+  objectTypeName  String?
+  title           String
+  minYear         Int?
+  maxYear         Int?
+  obverseThumb    String?
+  reverseThumb    String?
+  /// Popunjava se lijeno iz GET /types/{id}: value.currency.full_name, npr. "Dinar (1944-1965)".
+  currencyName    String?
+  currencyId      Int?
+  valueText       String?
+  numericValue    Float?
+  /// Sirovi JSON liste (/types) i detalja (/types/{id}) radi kasnije upotrebe bez novih poziva.
+  rawList         String
+  rawDetail       String?
+  detailFetchedAt DateTime?
+  cachedAt        DateTime @default(now())
+
+  issuer Issuer          @relation(fields: [issuerCode], references: [code], onDelete: Cascade)
+  items  CollectionItem[]
+
+  @@index([issuerCode, category])
+}
+
+/// Tvoj komad u kolekciji.
+model CollectionItem {
+  id         Int      @id @default(autoincrement())
+  typeId     Int
+  year       Int?
+  /// Stanje: UNC, AU, XF, VF, F, VG, G, P
+  grade      String?
+  quantity   Int      @default(1)
+  price      Float?
+  note       String?
+  /// Relativna putanja slike u data/uploads/, servira se preko /api/uploads/[file].
+  imagePath  String?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  type CatalogType @relation(fields: [typeId], references: [id], onDelete: Cascade)
+
+  @@index([typeId])
+}
+
+/// Brojač Numista poziva po mjesecu (kvota besplatnog plana: 2000/mjesec).
+model ApiUsage {
+  /// Format "YYYY-MM".
+  month     String @id
+  calls     Int    @default(0)
+  updatedAt DateTime @updatedAt
+}
+
+/// Jednostavne postavke ključ -> vrijednost (npr. budžet za detalje po sesiji).
+model Setting {
+  key   String @id
+  value String
+}
