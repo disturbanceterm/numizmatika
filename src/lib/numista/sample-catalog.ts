@@ -6,6 +6,7 @@
  *
  * @changelog
  * 2026-09-21  Početna verzija.
+ * 2026-09-21  Izvezen SAMPLE_ID_MIN da se probni tipovi mogu počistiti kad stigne pravi katalog.
  */
 import type {
   NumistaIssue,
@@ -25,7 +26,10 @@ interface SampleType extends NumistaTypeDetail {
   sample: true;
 }
 
-let nextId = 9_000_001;
+/** Probni N# počinju odavde; pravi Numista brojevi su daleko ispod (trenutno < 1 000 000). */
+export const SAMPLE_ID_MIN = 9_000_000;
+
+let nextId = SAMPLE_ID_MIN + 1;
 function id(real?: number) {
   return real ?? nextId++;
 }

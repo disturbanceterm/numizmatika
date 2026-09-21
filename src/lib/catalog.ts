@@ -4,6 +4,7 @@
  *
  * @changelog
  * 2026-09-21  Početna verzija.
+ * 2026-09-21  loadCatalog sa pravim ključem briše probne tipove (bez tvojih komada) za tog izdavača.
  */
 import "server-only";
 
@@ -13,8 +14,10 @@ import {
   fetchTypeDetail,
   fetchTypesPage,
   getDetailBudget,
+  isSampleMode,
   NumistaError,
 } from "@/lib/numista/client";
+import { SAMPLE_ID_MIN } from "@/lib/numista/sample-catalog";
 import { categoryFromObjectType, type NumistaTypeDetail, type NumistaTypeSummary } from "@/lib/numista/types";
 
 const PAGE_SIZE = 50;
@@ -103,6 +106,8 @@ export interface LoadCatalogResult {
   total: number;
   loaded: number;
   pages: number;
+  /** Probni tipovi uklonjeni pri prvom pravom učitavanju. */
+  removedSample: number;
 }
 
 /**
@@ -136,12 +141,22 @@ export async function loadCatalog(issuerCode: string): Promise<LoadCatalogResult
     page++;
   }
 
+  let removedSample = 0;
+  if (!isSampleMode()) {
+    // REASON: Ako je album ranije punjen iz probnog kataloga, njegovi izmišljeni tipovi ne smiju
+    // ostati pomiješani sa pravima. Tipove na koje si već vezao svoje komade čuvamo.
+    const res = await prisma.catalogType.deleteMany({
+      where: { issuerCode, id: { gte: SAMPLE_ID_MIN }, items: { none: {} } },
+    });
+    removedSample = res.count;
+  }
+
   await prisma.issuer.update({
     where: { code: issuerCode },
     data: { catalogSyncedAt: new Date(), catalogTotal: total },
   });
 
-  return { issuerCode, total, loaded, pages: page };
+  return { issuerCode, total, loaded, pages: page, removedSample };
 }
 
 /* ------------------------------------------------------------------ */
