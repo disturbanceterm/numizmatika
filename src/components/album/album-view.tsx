@@ -5,6 +5,7 @@
  * @changelog
  * 2026-09-21  Početna verzija.
  * 2026-09-21  Klik na sličicu otvara TypeDialog (veliki prikaz lica/naličja) umjesto direktno forme.
+ * 2026-09-21  refresh() više ne guta greške – neuspjelo ponovno učitavanje albuma se prikazuje.
  */
 "use client";
 
@@ -44,7 +45,11 @@ export function AlbumView({ initial, usage: initialUsage }: Props) {
 
   const refresh = useCallback(async () => {
     const r = await fetch(`/api/issuers/${encodeURIComponent(code)}/catalog`, { cache: "no-store" });
-    if (r.ok) setAlbum((await r.json()) as Album);
+    if (!r.ok) {
+      const d = (await r.json().catch(() => ({}))) as { error?: string };
+      throw new Error(`Album se nije učitao (HTTP ${r.status}): ${d.error ?? "nepoznata greška"}`);
+    }
+    setAlbum((await r.json()) as Album);
   }, [code]);
 
   const fillDetails = useCallback(async () => {
@@ -62,7 +67,12 @@ export function AlbumView({ initial, usage: initialUsage }: Props) {
       setLoad({ phase: "error", message: d.error ?? `HTTP ${r.status}` });
       return;
     }
-    await refresh();
+    try {
+      await refresh();
+    } catch (e) {
+      setLoad({ phase: "error", message: (e as Error).message });
+      return;
+    }
     const tail =
       d.stoppedReason === "budget"
         ? ` Budžet po sesiji potrošen – još ${d.remaining} čeka sledeće otvaranje.`
