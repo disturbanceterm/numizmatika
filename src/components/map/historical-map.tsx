@@ -61,11 +61,14 @@ export function HistoricalMap({ year, fills, selected, onSelect, onHover }: Prop
   const loadedRef = useRef(false);
   const hoveredIdRef = useRef<number | string | null>(null);
   const callbacksRef = useRef({ onSelect, onHover });
-  callbacksRef.current = { onSelect, onHover };
   // REASON: "load" događaj mape stiže asinhrono; čitamo najnovije propse iz ref-a da ne
-  // nacrtamo zastarjelu godinu/paletu iz zatvorenja (closure) pri kreiranju.
+  // nacrtamo zastarjelu godinu/paletu iz zatvorenja (closure) pri kreiranju. Ref se
+  // osvježava u efektu (a ne tokom rendera) kako nalaže React Compiler.
   const latestRef = useRef({ year, fills, selected });
-  latestRef.current = { year, fills, selected };
+  useEffect(() => {
+    callbacksRef.current = { onSelect, onHover };
+    latestRef.current = { year, fills, selected };
+  });
 
   // Inicijalizacija mape (jednom).
   useEffect(() => {
@@ -170,8 +173,6 @@ export function HistoricalMap({ year, fills, selected, onSelect, onHover }: Prop
       mapRef.current = null;
       loadedRef.current = false;
     };
-    // REASON: Početne vrijednosti se koriste samo pri kreiranju; promjene idu kroz efekte ispod.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // Promjena godine -> novi GeoJSON.

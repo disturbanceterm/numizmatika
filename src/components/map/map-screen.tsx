@@ -33,14 +33,15 @@ export function MapScreen() {
 
   useEffect(() => {
     let cancelled = false;
-    setFillError(null);
     fetch(`/api/map/fill?year=${year}`)
       .then(async (r) => {
         if (!r.ok) throw new Error((await r.json().catch(() => ({}))).error ?? `HTTP ${r.status}`);
         return r.json() as Promise<MapFillResponse>;
       })
       .then((d) => {
-        if (!cancelled) setFills(d.regions);
+        if (cancelled) return;
+        setFills(d.regions);
+        setFillError(null);
       })
       .catch((e: Error) => {
         if (!cancelled) setFillError(e.message);
