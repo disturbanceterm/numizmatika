@@ -8,7 +8,20 @@ izblijedjela silueta). Sve što imaš upisuješ sa godinom, stanjem, slikom i na
 <!--
 @changelog
 2026-09-21  Početna verzija.
+2026-09-21  Dodato brzo pokretanje na Windows-u (PowerShell) i napomena o MapLibre workeru.
 -->
+
+Kod: <https://github.com/disturbanceterm/numizmatika>
+
+## Brzo pokretanje (Windows PowerShell)
+
+```powershell
+git clone https://github.com/disturbanceterm/numizmatika.git; cd numizmatika
+npm install                 # zavisnosti + Prisma klijent + MapLibre worker u public/maplibre
+Copy-Item .env.example .env # po želji upiši NUMISTA_API_KEY
+npx prisma migrate deploy   # napravi data/numizmatika.db
+npm run dev                 # http://localhost:4317
+```
 
 ## Šta radi (prvi upotrebljiv komad)
 
