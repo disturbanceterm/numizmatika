@@ -89,6 +89,9 @@ Pravi ključ nikad ne komituj – `.env` je u `.gitignore`.
   (Evropa/Balkan). Kodovi označeni `"verified": false` su pretpostavke po Numistinom imenovanju i
   mogu se ispraviti u `/podesavanja`.
 - `public/maps/world_YYYY.geojson` – granice za svaku godinu.
+- `public/maplibre/` – MapLibre web-worker, kopira ga `scripts/copy-maplibre-worker.mjs` pri
+  `npm install` / `npm run dev` / `npm run build` (nije u git-u). Bez toga bi Turbopack vratio 404 za
+  worker i mapa bi ostala prazna.
 
 ## Tehnologije
 
