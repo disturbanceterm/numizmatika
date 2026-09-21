@@ -1,0 +1,27 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$comment": "@changelog 2026-09-21 Početna verzija.",
+  "title": "Numizmatika – region -> izdavač",
+  "type": "object",
+  "required": ["links"],
+  "properties": {
+    "$schema": { "type": "string" },
+    "$comment": { "type": "string" },
+    "links": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["region", "issuer", "issuerName"],
+        "properties": {
+          "region": { "type": "string", "description": "NAME iz GeoJSON-a" },
+          "issuer": { "type": "string", "description": "Numista issuer code" },
+          "issuerName": { "type": "string" },
+          "yearFrom": { "type": "integer" },
+          "yearTo": { "type": "integer" },
+          "verified": { "type": "boolean" },
+          "note": { "type": "string" }
+        }
+      }
+    }
+  }
+}

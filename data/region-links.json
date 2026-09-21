@@ -1,0 +1,48 @@
+{
+  "$schema": "./region-links.schema.json",
+  "$comment": "Startno mapiranje: ime regiona sa istorijske mape (NAME iz public/maps/world_YYYY.geojson) -> Numista izdavač (code iz GET /issuers). 'verified: true' = kod potvrđen na numista.com (URL /catalogue/{code}-1.html); 'verified: false' = pretpostavka po Numistinom (francuskom) imenovanju, provjerava se pri prvoj sinhronizaciji izdavača i može se ispraviti u /podesavanja. yearFrom/yearTo ograničavaju vezu na godine mape (uključivo). @changelog 2026-09-21 Početna verzija (Evropa/Balkan).",
+  "links": [
+    { "region": "Yugoslavia", "issuer": "yougoslavie", "issuerName": "Yugoslavia", "verified": true },
+    { "region": "Serbia", "issuer": "yougoslavie", "issuerName": "Yugoslavia", "yearFrom": 1992, "yearTo": 2003, "verified": true, "note": "SR Jugoslavija (1992-2003) je na mapi prikazana kao Serbia" },
+    { "region": "Serbia", "issuer": "serbie", "issuerName": "Serbia", "verified": true },
+    { "region": "Croatia", "issuer": "croatie", "issuerName": "Croatia", "verified": false },
+    { "region": "Bosnia and Herzegovina", "issuer": "bosnie-herzegovine", "issuerName": "Bosnia and Herzegovina", "verified": true },
+    { "region": "Bosnia-Herzegovina", "issuer": "autriche-habsbourg", "issuerName": "Austrian Empire", "yearFrom": 1878, "yearTo": 1918, "verified": true, "note": "Austro-ugarska okupacija/aneksija" },
+    { "region": "Bosnia-Herzegovina", "issuer": "bosnie-herzegovine", "issuerName": "Bosnia and Herzegovina", "verified": true },
+    { "region": "Montenegro", "issuer": "montenegro", "issuerName": "Montenegro", "verified": true },
+    { "region": "Slovenia", "issuer": "slovenie", "issuerName": "Slovenia", "verified": true },
+    { "region": "Macedonia", "issuer": "macedoine", "issuerName": "North Macedonia", "verified": true },
+
+    { "region": "Austrian Empire", "issuer": "autriche-habsbourg", "issuerName": "Austrian Empire", "verified": true },
+    { "region": "Austria Hungary", "issuer": "autriche-habsbourg", "issuerName": "Austrian Empire", "verified": true },
+    { "region": "Austro-Hungarian Empire", "issuer": "autriche-habsbourg", "issuerName": "Austrian Empire", "verified": true },
+    { "region": "Austria", "issuer": "autriche", "issuerName": "Austria", "verified": true },
+    { "region": "Hungary", "issuer": "hongrie", "issuerName": "Hungary", "verified": false },
+
+    { "region": "Ottoman Empire", "issuer": "ottoman", "issuerName": "Ottoman Empire", "verified": true },
+    { "region": "Ottoman Sultanate", "issuer": "ottoman", "issuerName": "Ottoman Empire", "verified": true },
+    { "region": "Turkey", "issuer": "turquie", "issuerName": "Turkey", "verified": true },
+    { "region": "Republic of Turkey", "issuer": "turquie", "issuerName": "Turkey", "verified": true },
+
+    { "region": "German Empire", "issuer": "allemagne", "issuerName": "Germany", "verified": false },
+    { "region": "Germany", "issuer": "allemagne", "issuerName": "Germany", "verified": false },
+    { "region": "Germany (Soviet)", "issuer": "allemagne", "issuerName": "Germany", "verified": false },
+    { "region": "Germany (UK)", "issuer": "allemagne", "issuerName": "Germany", "verified": false },
+    { "region": "Germany (USA)", "issuer": "allemagne", "issuerName": "Germany", "verified": false },
+    { "region": "Germany (France)", "issuer": "allemagne", "issuerName": "Germany", "verified": false },
+    { "region": "West Germany", "issuer": "allemagne", "issuerName": "Germany", "verified": false },
+
+    { "region": "Italy", "issuer": "italie", "issuerName": "Italy", "verified": true },
+    { "region": "Kingdom of Italy", "issuer": "italie", "issuerName": "Italy", "verified": true },
+
+    { "region": "USSR", "issuer": "ancienne_urss", "issuerName": "Soviet Union", "verified": true },
+    { "region": "Russia", "issuer": "russie", "issuerName": "Russian Federation", "verified": false },
+
+    { "region": "Bulgaria", "issuer": "bulgarie", "issuerName": "Bulgaria", "verified": true },
+    { "region": "Romania", "issuer": "roumanie", "issuerName": "Romania", "verified": false },
+    { "region": "Greece", "issuer": "grece", "issuerName": "Greece", "verified": false },
+    { "region": "Albania", "issuer": "albanie", "issuerName": "Albania", "verified": true },
+    { "region": "Czechoslovakia", "issuer": "tchecoslovaquie", "issuerName": "Czechoslovakia", "verified": false },
+    { "region": "Poland", "issuer": "pologne", "issuerName": "Poland", "verified": true }
+  ]
+}
