@@ -4,6 +4,7 @@
  *
  * @changelog
  * 2026-09-21  Početna verzija.
+ * 2026-09-21  AddItemForm izvezen da ga koristi i TypeDialog (veliki prikaz -> dodavanje).
  */
 "use client";
 
@@ -57,13 +58,13 @@ export function AddItemDialog({ tile, onClose, onSaved }: Props) {
   );
 }
 
-interface FormProps {
+export interface FormProps {
   tile: AlbumTile;
   onClose: () => void;
   onSaved: () => void;
 }
 
-function AddItemForm({ tile, onClose, onSaved }: FormProps) {
+export function AddItemForm({ tile, onClose, onSaved }: FormProps) {
   const [year, setYear] = useState<string>(tile.minYear != null ? String(tile.minYear) : "");
   const [grade, setGrade] = useState<string>("VF");
   const [quantity, setQuantity] = useState("1");

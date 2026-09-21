@@ -5,6 +5,7 @@
  * @changelog
  * 2026-09-21  Početna verzija.
  * 2026-09-21  loadCatalog sa pravim ključem briše probne tipove (bez tvojih komada) za tog izdavača.
+ * 2026-09-21  AlbumTile nosi pune slike lica/naličja i opise iz rawDetail (za veliki prikaz).
  */
 import "server-only";
 
@@ -240,6 +241,12 @@ export interface AlbumTile {
   valueText: string | null;
   numericValue: number | null;
   detailFetched: boolean;
+  /** Puna slika lica/naličja sa Numiste (iz GET /types/{id}); null dok detalji nisu dovučeni. */
+  obversePicture: string | null;
+  reversePicture: string | null;
+  obverseDescription: string | null;
+  reverseDescription: string | null;
+  numistaUrl: string | null;
   items: {
     id: number;
     year: number | null;
@@ -269,6 +276,40 @@ export interface Album {
   owned: number;
   withoutDetail: number;
   counts: { banknote: number; coin: number; exonumia: number };
+}
+
+interface DetailPictures {
+  obversePicture: string | null;
+  reversePicture: string | null;
+  obverseDescription: string | null;
+  reverseDescription: string | null;
+  numistaUrl: string | null;
+}
+
+const NO_PICTURES: DetailPictures = {
+  obversePicture: null,
+  reversePicture: null,
+  obverseDescription: null,
+  reverseDescription: null,
+  numistaUrl: null,
+};
+
+// REASON: Pune slike čitamo iz sačuvanog JSON-a detalja umjesto novih kolona – nema migracije,
+// a parsiranje nekoliko stotina malih JSON-ova po albumu je zanemarljivo.
+function picturesFromDetail(raw: string | null): DetailPictures {
+  if (!raw) return NO_PICTURES;
+  try {
+    const d = JSON.parse(raw) as NumistaTypeDetail;
+    return {
+      obversePicture: d.obverse?.picture ?? d.obverse?.thumbnail ?? null,
+      reversePicture: d.reverse?.picture ?? d.reverse?.thumbnail ?? null,
+      obverseDescription: d.obverse?.description ?? null,
+      reverseDescription: d.reverse?.description ?? null,
+      numistaUrl: d.url ?? null,
+    };
+  } catch {
+    return NO_PICTURES;
+  }
 }
 
 function parseYearsFromCurrency(name: string): { from: number | null; to: number | null } {
@@ -335,6 +376,7 @@ export async function getAlbum(issuerCode: string): Promise<Album | null> {
       valueText: r.valueText,
       numericValue: r.numericValue,
       detailFetched: !!r.detailFetchedAt,
+      ...picturesFromDetail(r.rawDetail),
       items: r.items.map((i) => ({
         id: i.id,
         year: i.year,

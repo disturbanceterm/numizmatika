@@ -4,6 +4,7 @@
  *
  * @changelog
  * 2026-09-21  Početna verzija.
+ * 2026-09-21  Hover natpis "Otvori" (klik sad vodi na veliki prikaz).
  */
 "use client";
 
@@ -77,7 +78,7 @@ export function Tile({ tile, onAdd }: Props) {
         ) : (
           <span className="absolute inset-0 flex items-center justify-center bg-black/0 opacity-0 transition-opacity group-hover:opacity-100">
             <span className="inline-flex items-center gap-1 rounded-full bg-foreground px-2 py-0.5 text-[11px] font-medium text-background shadow">
-              <Plus className="size-3" /> Dodaj
+              <Plus className="size-3" /> Otvori
             </span>
           </span>
         )}

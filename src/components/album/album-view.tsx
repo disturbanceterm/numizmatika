@@ -4,6 +4,7 @@
  *
  * @changelog
  * 2026-09-21  Početna verzija.
+ * 2026-09-21  Klik na sličicu otvara TypeDialog (veliki prikaz lica/naličja) umjesto direktno forme.
  */
 "use client";
 
@@ -11,8 +12,8 @@ import { ArrowLeft, Download, Loader2, RefreshCw } from "lucide-react";
 import Link from "next/link";
 import { useCallback, useEffect, useMemo, useState } from "react";
 
-import { AddItemDialog } from "@/components/album/add-item-dialog";
 import { Tile } from "@/components/album/tile";
+import { TypeDialog } from "@/components/album/type-dialog";
 import type { UsageInfo } from "@/components/quota-badge";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -195,7 +196,7 @@ export function AlbumView({ initial, usage: initialUsage }: Props) {
         </>
       )}
 
-      <AddItemDialog
+      <TypeDialog
         tile={active}
         onClose={() => setActive(null)}
         onSaved={async () => {
