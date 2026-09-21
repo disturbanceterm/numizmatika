@@ -3,6 +3,7 @@
  *
  * @changelog
  * 2026-09-21  Početna verzija.
+ * 2026-09-21  Statistika bez `id IN (...)` liste (SQLite limit 999 parametara).
  */
 import "server-only";
 
@@ -116,8 +117,9 @@ export async function getCollectionStats(): Promise<CollectionStats> {
   });
   const typeIds = new Set(items.map((i) => i.typeId));
   const issuerCodes = new Set(items.map((i) => i.type.issuerCode));
+  // REASON: relacijski filter umjesto `id IN (...)` – lista bi mogla preći SQLite limit parametara.
   const ownedTypes = await prisma.catalogType.findMany({
-    where: { id: { in: [...typeIds] } },
+    where: { items: { some: {} } },
     select: { category: true, issuerCode: true },
   });
 

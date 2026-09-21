@@ -6,6 +6,7 @@
  * 2026-09-21  Početna verzija.
  * 2026-09-21  loadCatalog sa pravim ključem briše probne tipove (bez tvojih komada) za tog izdavača.
  * 2026-09-21  AlbumTile nosi pune slike lica/naličja i opise iz rawDetail (za veliki prikaz).
+ * 2026-09-21  getAlbum bez `include: items` – Prisma je pravila `IN (...)` sa >999 parametara (P2029 na SQLite).
  */
 import "server-only";
 
@@ -322,11 +323,25 @@ export async function getAlbum(issuerCode: string): Promise<Album | null> {
   const issuer = await prisma.issuer.findUnique({ where: { code: issuerCode } });
   if (!issuer) return null;
 
-  const rows = await prisma.catalogType.findMany({
-    where: { issuerCode },
-    include: { items: { orderBy: { id: "asc" } } },
-    orderBy: [{ minYear: "asc" }, { numericValue: "asc" }, { id: "asc" }],
-  });
+  // REASON: `include: { items }` bi generisao `WHERE typeId IN (<svi id-jevi>)`; za ~2000 tipova to
+  // prelazi SQLite limit od 999 parametara (P2029). Zato komade vučemo jednim JOIN upitom i spajamo u JS-u.
+  const [types, allItems] = await Promise.all([
+    prisma.catalogType.findMany({
+      where: { issuerCode },
+      orderBy: [{ minYear: "asc" }, { numericValue: "asc" }, { id: "asc" }],
+    }),
+    prisma.collectionItem.findMany({
+      where: { type: { issuerCode } },
+      orderBy: { id: "asc" },
+    }),
+  ]);
+  const itemsByType = new Map<number, typeof allItems>();
+  for (const it of allItems) {
+    const list = itemsByType.get(it.typeId);
+    if (list) list.push(it);
+    else itemsByType.set(it.typeId, [it]);
+  }
+  const rows = types.map((t) => ({ ...t, items: itemsByType.get(t.id) ?? [] }));
 
   const groups = new Map<string, AlbumGroup>();
   const counts = { banknote: 0, coin: 0, exonumia: 0 };
